@@ -8,12 +8,11 @@ import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { useToast } from "@/components/ui/use-toast"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ToastProvider } from "@/components/ui/toast"
+import { toast } from 'react-hot-toast'
 
 const searchSchema = z.object({
-  date: z.string(),
+  date: z.string().min(1, 'Date is required'),
   origin: z.string().min(1, 'Origin is required'),
   destination: z.string().min(1, 'Destination is required'),
 })
@@ -32,7 +31,6 @@ export default function Search() {
   const [flights, setFlights] = useState<Flight[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
-  const { toast } = useToast()
 
   const form = useForm<z.infer<typeof searchSchema>>({
     resolver: zodResolver(searchSchema),
@@ -55,11 +53,7 @@ export default function Search() {
     setIsLoading(true)
     try {
       if (!isFebruary2025(values.date)) {
-        toast({
-          title: "Sorry :(",
-          description: "Only flights in 1 to 29 February 2025 are available",
-          variant: "destructive",
-        })
+        toast.error( "Sorry :( Only flights in 1 to 29 February 2025 are available")
         setIsLoading(false)
         return
       }
@@ -67,16 +61,15 @@ export default function Search() {
       const response = await fetch(`/api/flight?${new URLSearchParams(values)}`)
       if (response.ok) {
         const data = await response.json()
+        if (data.length===0) {
+          toast.error("No flights found")
+        }
         setFlights(data)
       } else {
         throw new Error('Failed to fetch flights')
       }
     } catch (error) {
-      toast({
-        title: "Search failed",
-        description: "Please try again later",
-        variant: "destructive",
-      })
+      toast.error("Search failed")
     } finally {
       setIsLoading(false)
     }
@@ -84,7 +77,6 @@ export default function Search() {
 
   return (
     <div>
-      <ToastProvider>
         <h1 className="text-2xl font-bold mb-6">Search Flights</h1>
         <div className="text-red-500">*Only flights in 1 to 29 February 2025 are available.</div>
         <Form {...form}>
@@ -167,7 +159,6 @@ export default function Search() {
             ))}
           </div>
         )}
-      </ToastProvider>
     </div>
   )
 }

@@ -8,7 +8,7 @@ import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from 'react-hot-toast'
 
 const bookingSchema = z.object({
   passengerName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -19,7 +19,6 @@ const bookingSchema = z.object({
 
 export default function BookFlight({ params }: { params: { flightId: string } }) {
   const router = useRouter()
-  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof bookingSchema>>({
@@ -40,25 +39,23 @@ export default function BookFlight({ params }: { params: { flightId: string } })
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       })
+
+      const data = await response.json()
+
       if (response.ok) {
-        toast({
-          title: "Booking successful",
-          description: "Your flight has been booked",
-        })
+        toast.success(data.message)
         router.push('/bookings')
       } else {
-        throw new Error('Booking failed')
+        toast.error(data.error)
       }
+      
     } catch (error) {
-      toast({
-        title: "Booking failed",
-        description: "Please try again later",
-        variant: "destructive",
-      })
+      toast.error('Unexpected error occurred. Please try again later.')
     } finally {
       setIsLoading(false)
     }
   }
+
 
   return (
     <div className="max-w-md mx-auto">

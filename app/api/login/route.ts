@@ -21,7 +21,6 @@ export async function POST(request: Request) {
       httpOnly: true,
       sameSite: 'strict',
     });
-    console.log(data.userId)
   }
 
   return NextResponse.json({ token: data })

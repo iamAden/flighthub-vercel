@@ -13,6 +13,6 @@ export async function POST(request: Request) {
 
   const data = await response.text()
 
-  return NextResponse.json({ message: data })
+  return NextResponse.json({ message: data }, { status: response.status })
 }
 

@@ -8,7 +8,7 @@ import * as z from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from "react-hot-toast"
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -18,7 +18,6 @@ const registerSchema = z.object({
 
 export default function Register() {
   const router = useRouter()
-  const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof registerSchema>>({
@@ -38,21 +37,17 @@ export default function Register() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       })
+
+      const data = await response.json();
+
       if (response.ok) {
-        toast({
-          title: "Registration successful",
-          description: "You can now log in with your credentials",
-        })
+        toast.success(data.message)
         router.push('/login')
       } else {
-        throw new Error('Registration failed')
+        toast.error(data.message)
       }
     } catch (error) {
-      toast({
-        title: "Registration failed",
-        description: "Please try again later",
-        variant: "destructive",
-      })
+      toast.error( "Registration failed")
     } finally {
       setIsLoading(false)
     }

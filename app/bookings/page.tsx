@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useToast } from "@/components/ui/use-toast"
+import { toast } from 'react-hot-toast'
 
 type Booking = {
   id: string
@@ -18,7 +18,6 @@ type Booking = {
 export default function Bookings() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const { toast } = useToast()
 
   useEffect(() => {
     fetchBookings()
@@ -29,17 +28,12 @@ export default function Bookings() {
       const response = await fetch('/api/bookinghistory')
       if (response.ok) {
         const data = await response.json()
-        console.log(data)
         setBookings(data)
       } else {
         throw new Error('Failed to fetch bookings')
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch bookings",
-        variant: "destructive",
-      })
+      toast.error("Failed to fetch bookings :(")
     } finally {
       setIsLoading(false)
     }
@@ -49,20 +43,13 @@ export default function Bookings() {
     try {
       const response = await fetch(`/api/checkin?bookingId=${bookingId}`, { method: 'POST' })
       if (response.ok) {
-        toast({
-          title: "Check-in successful",
-          description: "You have successfully checked in for your flight",
-        })
+        toast.success("You have successfully checked in for your flight :)")
         fetchBookings()
       } else {
         throw new Error('Check-in failed')
       }
     } catch (error) {
-      toast({
-        title: "Check-in failed",
-        description: "Please try again later",
-        variant: "destructive",
-      })
+      toast.error("Check in failed.")
     }
   }
 
@@ -70,20 +57,13 @@ export default function Bookings() {
     try {
       const response = await fetch(`/api/cancel?bookingId=${bookingId}`, { method: 'POST' })
       if (response.ok) {
-        toast({
-          title: "Cancellation successful",
-          description: "Your booking has been cancelled",
-        })
+        toast.success("Booking is cancelled successfully :)")
         fetchBookings()
       } else {
         throw new Error('Cancellation failed')
       }
     } catch (error) {
-      toast({
-        title: "Cancellation failed",
-        description: "Please try again later",
-        variant: "destructive",
-      })
+      toast.error("Failed to cancel booking :(")
     }
   }
 

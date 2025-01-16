@@ -62,8 +62,7 @@ export default function Login() {
         credentials: 'include',
       });
 
-      const data = await response.json(); // Parse the JSON response
-      console.log(data);
+      const data = await response.json(); 
 
       if (!data.token.error) {
         // Login successful
