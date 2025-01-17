@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { toast } from 'react-hot-toast';
-import { cookies } from 'next/headers';
 
 export default function Header() {
   const router = useRouter();
+
 
   const handleLogout = async () => {
     try {
@@ -48,6 +48,9 @@ export default function Header() {
           </Button>
           <Button asChild variant="ghost">
             <Link href="/bookings">My Bookings</Link>
+          </Button>
+          <Button asChild variant="ghost">
+            <Link href="/profile">Profile</Link>
           </Button>
           <Button asChild variant="ghost">
             <Link href="/login">Login</Link>
